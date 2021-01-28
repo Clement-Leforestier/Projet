@@ -22,3 +22,19 @@ df$`Commune de montagne`[is.na(df$`Commune de montagne`)] = 0
 df <- separate(df, `Engagements L. 33-13 et AMEL`,
                sep ="[\\(\\)]",
                into = c("Operateur","Dispositif","Pourcentage_couverture"))
+
+##ajouter un test pour sélectionner les communes AMII 
+df$is_AMII<-df$Dispositif == "AMII"
+df$is_AMII[is.na(df$is_AMII)] = FALSE
+df$is_AMII<-as.numeric(df$is_AMII)
+
+#Importation fichier entreprises
+dfe <- read_csv("Entreprises.csv")
+dfe<- dfe[-c(1)]
+
+new_df0 = merge(df, dfe, by.x = "Code commune", by.y ="COM" )
+
+#Importation fichier avec pop, superficie, etc
+dfc = read_csv2("base_comp.csv",skip = 5)#base comp = new name base comaparateur cc
+dfc<- dfc[c(1,5,7,20,22,27)]
+new_df = merge(new_df0,dfc,by.x = "Code commune", by.y ="CODGEO" )
